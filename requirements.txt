@@ -1,0 +1,4 @@
+flask
+gunicorn
+pickle-mixin
+scikit-learn
