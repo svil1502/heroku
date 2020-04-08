@@ -16,18 +16,10 @@ form {
     <title>Salary Model</title>
 </head>
 
- <form action="{{ url_for('main') }}" method="POST" enctype="multipart/form-data">
-        
-           <fieldset>
-        <legend>Input values:</legend>
-        Your experience:
-        <input type="file" name="file">
-        <br>
-        <br>
-        <input type="submit">
-    </fieldset>
+    <form action="{{ url_for('main') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="experience">
+        <button type="submit">Загрузить</button>
     </form>
-
 <div class="result" align="center">
     {% if result %}
     	<br> <p style="font-size:50px">Your predict week:</p>
