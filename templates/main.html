@@ -16,20 +16,21 @@ form {
     <title>Salary Model</title>
 </head>
 
-<form action="{{ url_for('main') }}" method="POST">
-    <fieldset>
-        <legend>Input values:</legend>
-        Your experience:
-        <input name="experience" type="number" required>
-        <br>
-        <br>
-        <input type="submit">
-    </fieldset>
-</form>
+{% if args["method"] == "POST" %}
+        {% if args["file_size_error"] %}
+            <h1>Размер файла превышает 1мб.!</h1>
+        {% else %}
+            <h1>Файл успешно загружен.</h1>
+        {% endif %}
+    {% endif %}
+    <form action="{{ url_for('main') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Загрузить</button>
+    </form>
 
 <div class="result" align="center">
     {% if result %}
-    	<br> <p style="font-size:50px">Your salary:</p>
+    	<br> <p style="font-size:50px">Your predict week:</p>
    		<p style="font-size:50px">{{ result }}</p>
     {% endif %}
 </div>
