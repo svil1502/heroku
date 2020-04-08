@@ -16,8 +16,7 @@ def main():
         with open('model.pkl', 'rb') as fh:
             loaded_model = pickle.load(fh)
         exp = float(flask.request.form['experience'])
-      #  temp = loaded_model.predict([ [exp] ])
-       temp = 4
+        temp = loaded_model.predict([ [exp] ])
         return render_template('main.html', result = temp)
 
 if __name__ == '__main__':
