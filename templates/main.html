@@ -16,16 +16,16 @@ form {
     <title>Salary Model</title>
 </head>
 
-{% if args["method"] == "POST" %}
-        {% if args["file_size_error"] %}
-            <h1>Размер файла превышает 1мб.!</h1>
-        {% else %}
-            <h1>Файл успешно загружен.</h1>
-        {% endif %}
-    {% endif %}
-    <form action="{{ url_for('main') }}" method="POST" enctype="multipart/form-data">
+ <form action="{{ url_for('main') }}" method="POST" enctype="multipart/form-data">
+        
+           <fieldset>
+        <legend>Input values:</legend>
+        Your experience:
         <input type="file" name="file">
-        <button type="submit">Загрузить</button>
+        <br>
+        <br>
+        <input type="submit">
+    </fieldset>
     </form>
 
 <div class="result" align="center">
