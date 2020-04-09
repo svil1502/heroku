@@ -156,9 +156,9 @@ def index():
                 
            else:
                 t = 1
-args["t"]  = t
+      args["t"]  = t
         
-           return render_template("main.html", args=args)
+      return render_template("main.html", args=args)
 
 if __name__ == "__main__":
     app.run(debug=True)    
