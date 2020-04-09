@@ -1,15 +1,4 @@
-from flask import Flask, render_template, request
-
-
-MAX_FILE_SIZE = 1024 * 1024 + 1
-
-app = Flask(__name__)
-
-
-@app.route("/", methods=["POST", "GET"])
-
-    
-#Программа    
+from flask import Flask, render_template, request   
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -21,6 +10,13 @@ import scipy.stats as scs
 from scipy.optimize import minimize
 from sklearn.linear_model import LinearRegression
 import xgboost as xgb
+MAX_FILE_SIZE = 1024 * 1024 + 1
+
+app = Flask(__name__)
+
+
+@app.route("/", methods=["POST", "GET"])
+
 def custom_rating(genre):
     if (genre == 1 or genre == 2 or genre == 12) :
         return 1
@@ -153,16 +149,14 @@ def index():
                args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
                args["method"] = "POST"
           try:
-                file = open('6601_2.csv')
+                #file = open('6601_2.csv')
+                t=0
           except IOError as e:
                 t = "не удалось открыть файл"
                 
           else:
-                 with file:        
-                       dataset = pd.read_csv('6601_2.csv')
-                       t = prediction(dataset)
-
-           args["t"]  = t
+              t = 1
+args["t"]  = t
         
            return render_template("main.html", args=args)
 

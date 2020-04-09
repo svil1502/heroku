@@ -1,17 +1,15 @@
 flask
 gunicorn
 pickle-mixin
-
+scikit-learn
 matplotlib
 
-
+numpy
 pandas
 tqdm
 sklearn
 statsmodels
-
+scipy
 xgboost 
-numpy==1.9.1 
-scikit-learn==0.16.1 
-scipy==0.14.0
+
 
