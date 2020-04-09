@@ -3,3 +3,15 @@ gunicorn
 pickle-mixin
 scikit-learn
 matplotlib
+
+numpy
+pandas
+sys
+warnings
+warnings.filterwarnings('ignore')
+tqdm
+sklearn
+statsmodels
+scipy
+xgboost 
+
