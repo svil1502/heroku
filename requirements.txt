@@ -6,8 +6,6 @@ matplotlib
 
 numpy
 pandas
-
-warnings
 tqdm
 sklearn
 statsmodels
