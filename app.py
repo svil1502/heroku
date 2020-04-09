@@ -151,11 +151,11 @@ def index():
            try:
                 #file = open('6601_2.csv')
                 t=0
-          except IOError as e:
+           except IOError as e:
                 t = "не удалось открыть файл"
                 
-          else:
-              t = 1
+           else:
+                t = 1
 args["t"]  = t
         
            return render_template("main.html", args=args)
