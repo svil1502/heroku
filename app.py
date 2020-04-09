@@ -38,7 +38,7 @@ def index():
             file_bytes = file.read(MAX_FILE_SIZE)
             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
         args["method"] = "POST"
-    return render_template("main.html", args=args, result = t)
+    return render_template("main.html", result = t)
 
 if __name__ == "__main__":
     app.run(debug=True)
