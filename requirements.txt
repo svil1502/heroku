@@ -6,7 +6,7 @@ matplotlib
 
 numpy
 pandas
-sys
+
 warnings
 tqdm
 sklearn
