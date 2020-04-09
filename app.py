@@ -154,15 +154,15 @@ def index():
                args["method"] = "POST"
           try:
                 file = open('6601_2.csv')
-                except IOError as e:
+          except IOError as e:
                 t = "не удалось открыть файл"
                 
           else:
                  with file:        
-                 dataset = pd.read_csv('6601_2.csv')
-                 t = prediction(dataset)
+                       dataset = pd.read_csv('6601_2.csv')
+                       t = prediction(dataset)
 
-                 args["t"]  = t
+           args["t"]  = t
         
            return render_template("main.html", args=args)
 
