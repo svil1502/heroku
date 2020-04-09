@@ -7,9 +7,8 @@ import matplotlib.pyplot as plt
   
 # import pandas for importing csv files  
 import pandas as pd  
-import sys
-import warnings
-warnings.filterwarnings('ignore')
+
+
 from tqdm import tqdm
 
 import pandas as pd
