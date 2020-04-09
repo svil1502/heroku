@@ -32,7 +32,7 @@ app = Flask(__name__)
 
     
 #Программа    
-import pandas as pd  
+
 
 
 from tqdm import tqdm
