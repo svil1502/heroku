@@ -141,7 +141,7 @@ def prediction(dataset):
     return t
 def index():
       args = {"method": "GET"}
-     if request.method == "POST":
+      if request.method == "POST":
            t = 0
            file = request.files["file"]
            if bool(file.filename):
