@@ -43,7 +43,22 @@ if __name__ == "__main__":
     app.run(debug=True)
     
 #Программа    
-# Функция для расчета сезонности
+import pandas as pd  
+
+
+from tqdm import tqdm
+
+import pandas as pd
+import numpy as np
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+import statsmodels.formula.api as smf
+import statsmodels.tsa.api as smt
+import statsmodels.api as sm
+import scipy.stats as scs
+from scipy.optimize import minimize
+from sklearn.linear_model import LinearRegression
+import xgboost as xgb
 def custom_rating(genre):
     if (genre == 1 or genre == 2 or genre == 12) :
         return 1
@@ -55,9 +70,9 @@ def custom_rating(genre):
         return 4
         
 #Датасет из 1С по одной позиции товара со свойствами : Общая сумма продаж за день,Остаток на складе, Количество проданного товара за день - целевая переменная
-dataset = pd.read_csv('6601_2.csv')
+dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
 dataset.columns = ["Time","Con","y", "Sum"]
-data = dataset.copy()
+
 def prepare_data(data):
     data.Sum= data.Sum.replace(r'\s+','',regex=True)
     data.Sum = data.Sum .str.replace(',', ".").astype(float)
@@ -118,9 +133,10 @@ def prepare_data(data):
     X_test = data.loc[test_index+1:].drop(["y", "Con", "Sum"], axis=1)
     y_test = data.loc[test_index+1:][["y"]]
     return (X_train, y_train, X_test, y_test, data)   
+data = dataset.copy()
 (X_train, y_train, X_test, y_test, data) = prepare_data(data)
 #Проверим 119 строку y_test-должно быть 1235
-X_predict = X_test. LinearRegressionloc[119:119]
+X_predict = X_test.loc[119:119]
 feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
 #Функция для подготовки данных для датасета, которых нужно спрогнозировать
 def func_feature_week(X_predict):
@@ -158,9 +174,12 @@ new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', '
        'lag_sum7', 'mov_avg_Con7', 'mov_avg_Sum7', 'month_average_Con7',
        'month_average_Sum7', 'tree_month_average_Con7',
        'tree_month_average_Sum7']]
+X_train['Time']=X_train['Time'].apply(lambda x: x.toordinal())
+X_test['Time']=X_test['Time'].apply(lambda x: x.toordinal()) 
 #Модель 1 Линейная регрессия
 lr = LinearRegression()
 lr.fit(X_train, y_train)
 #На тестовых данных получаем
 t = lr.predict(X_test.loc[119:119])[0][0]
- 
+
+    
