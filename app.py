@@ -170,7 +170,7 @@ def prediction(dataset):
     #На тестовых данных получаем
     t = lr.predict(X_test.loc[119:119])[0][0]
     return t
-def main():
+def index():
       args = {"method": "GET"}
      if request.method == "POST":
            t = 0
@@ -186,7 +186,7 @@ def main():
                 
           else:
                  with file:        
-                 dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
+                 dataset = pd.read_csv('6601_2.csv')
                  t = prediction(dataset)
 
                  args["t"]  = t
