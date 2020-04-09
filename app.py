@@ -29,20 +29,7 @@ app = Flask(__name__)
 
 
 @app.route("/", methods=["POST", "GET"])
-def index():
-    args = {"method": "GET"}
-    if request.method == "POST":
-        t = 0
-        file = request.files["file"]
-        if bool(file.filename):
-            file_bytes = file.read(MAX_FILE_SIZE)
-            args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
-        args["method"] = "POST"
-        args["t"]  = t
-    return render_template("main.html", args=args)
 
-if __name__ == "__main__":
-    app.run(debug=True)
     
 #Программа    
 import pandas as pd  
@@ -183,13 +170,27 @@ def prediction(dataset):
     #На тестовых данных получаем
     t = lr.predict(X_test.loc[119:119])[0][0]
     return t
-try:
-    file = open('/content/drive/My Drive/coursera/6601_2.csv')
-except IOError as e:
-    print(u'не удалось открыть файл')
-else:
-    with file:        
-          #Датасет из 1С по одной позиции товара со свойствами : Общая сумма продаж за день,Остаток на складе, Количество проданного товара за день - целевая переменная
-          dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
-          t = prediction(dataset)
-    
+def main():
+      args = {"method": "GET"}
+     if request.method == "POST":
+           t = 0
+           file = request.files["file"]
+           if bool(file.filename):
+               file_bytes = file.read(MAX_FILE_SIZE)
+               args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
+               args["method"] = "POST"
+          try:
+                file = open('/content/drive/My Drive/coursera/6601_2.csv')
+                except IOError as e:
+                print(u'не удалось открыть файл')
+          else:
+                 with file:        
+                 dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
+                 t = prediction(dataset)
+
+                 args["t"]  = t
+        
+           return render_template("main.html", args=args)
+
+if __name__ == "__main__":
+    app.run(debug=True)    
