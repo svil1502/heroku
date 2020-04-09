@@ -68,10 +68,7 @@ def custom_rating(genre):
         return 3
     elif (genre == 9 or genre == 10 or genre == 11):
         return 4
-        
-#Датасет из 1С по одной позиции товара со свойствами : Общая сумма продаж за день,Остаток на складе, Количество проданного товара за день - целевая переменная
-dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
-dataset.columns = ["Time","Con","y", "Sum"]
+
 
 def prepare_data(data):
     data.Sum= data.Sum.replace(r'\s+','',regex=True)
@@ -133,12 +130,6 @@ def prepare_data(data):
     X_test = data.loc[test_index+1:].drop(["y", "Con", "Sum"], axis=1)
     y_test = data.loc[test_index+1:][["y"]]
     return (X_train, y_train, X_test, y_test, data)   
-data = dataset.copy()
-(X_train, y_train, X_test, y_test, data) = prepare_data(data)
-#Проверим 119 строку y_test-должно быть 1235
-X_predict = X_test.loc[119:119]
-feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
-#Функция для подготовки данных для датасета, которых нужно спрогнозировать
 def func_feature_week(X_predict):
     X_X_predict = pd.DataFrame()
     lag_start = 1
@@ -152,34 +143,51 @@ def func_feature_week(X_predict):
         for i in range(lag_start, lag_end):
                 X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = X_predict["{feat}{i}".format(feat=feat, i=i)] 
     return X_X_predict
-X_X_predict = func_feature_week(X_predict)
-new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', 'mov_avg_Con',
-       'mov_avg_Sum', 'month_average_Con', 'month_average_Sum',
-       'tree_month_average_Con', 'tree_month_average_Sum', 'lag_con1',
-       'lag_sum1', 'mov_avg_Con1', 'mov_avg_Sum1', 'month_average_Con1',
-       'month_average_Sum1', 'tree_month_average_Con1',
-       'tree_month_average_Sum1', 'lag_con2', 'lag_sum2', 'mov_avg_Con2',
-       'mov_avg_Sum2', 'month_average_Con2', 'month_average_Sum2',
-       'tree_month_average_Con2', 'tree_month_average_Sum2', 'lag_con3',
-       'lag_sum3', 'mov_avg_Con3', 'mov_avg_Sum3', 'month_average_Con3',
-       'month_average_Sum3', 'tree_month_average_Con3',
-       'tree_month_average_Sum3', 'lag_con4', 'lag_sum4', 'mov_avg_Con4',
-       'mov_avg_Sum4', 'month_average_Con4', 'month_average_Sum4',
-       'tree_month_average_Con4', 'tree_month_average_Sum4', 'lag_con5',
-       'lag_sum5', 'mov_avg_Con5', 'mov_avg_Sum5', 'month_average_Con5',
-       'month_average_Sum5', 'tree_month_average_Con5',
-       'tree_month_average_Sum5', 'lag_con6', 'lag_sum6', 'mov_avg_Con6',
-       'mov_avg_Sum6', 'month_average_Con6', 'month_average_Sum6',
-       'tree_month_average_Con6', 'tree_month_average_Sum6', 'lag_con7',
-       'lag_sum7', 'mov_avg_Con7', 'mov_avg_Sum7', 'month_average_Con7',
-       'month_average_Sum7', 'tree_month_average_Con7',
-       'tree_month_average_Sum7']]
-X_train['Time']=X_train['Time'].apply(lambda x: x.toordinal())
-X_test['Time']=X_test['Time'].apply(lambda x: x.toordinal()) 
-#Модель 1 Линейная регрессия
-lr = LinearRegression()
-lr.fit(X_train, y_train)
-#На тестовых данных получаем
-t = lr.predict(X_test.loc[119:119])[0][0]
-
+def prediction(dataset):
+    dataset.columns = ["Time","Con","y", "Sum"]
+    data = dataset.copy()
+    (X_train, y_train, X_test, y_test, data) = prepare_data(data)
+    #Проверим 119 строку y_test-должно быть 1235
+    X_predict = X_test.loc[119:119]
+    feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
+    #Функция для подготовки данных для датасета, которых нужно спрогнозировать
+    X_X_predict = func_feature_week(X_predict)
+    new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', 'mov_avg_Con',
+                'mov_avg_Sum', 'month_average_Con', 'month_average_Sum',
+                'tree_month_average_Con', 'tree_month_average_Sum', 'lag_con1',
+                'lag_sum1', 'mov_avg_Con1', 'mov_avg_Sum1', 'month_average_Con1',
+                'month_average_Sum1', 'tree_month_average_Con1',
+                'tree_month_average_Sum1', 'lag_con2', 'lag_sum2', 'mov_avg_Con2',
+                'mov_avg_Sum2', 'month_average_Con2', 'month_average_Sum2',
+                'tree_month_average_Con2', 'tree_month_average_Sum2', 'lag_con3',
+                'lag_sum3', 'mov_avg_Con3', 'mov_avg_Sum3', 'month_average_Con3',
+                'month_average_Sum3', 'tree_month_average_Con3',
+                'tree_month_average_Sum3', 'lag_con4', 'lag_sum4', 'mov_avg_Con4',
+                'mov_avg_Sum4', 'month_average_Con4', 'month_average_Sum4',
+                'tree_month_average_Con4', 'tree_month_average_Sum4', 'lag_con5',
+                'lag_sum5', 'mov_avg_Con5', 'mov_avg_Sum5', 'month_average_Con5',
+                'month_average_Sum5', 'tree_month_average_Con5',
+                'tree_month_average_Sum5', 'lag_con6', 'lag_sum6', 'mov_avg_Con6',
+                'mov_avg_Sum6', 'month_average_Con6', 'month_average_Sum6',
+                'tree_month_average_Con6', 'tree_month_average_Sum6', 'lag_con7',
+                'lag_sum7', 'mov_avg_Con7', 'mov_avg_Sum7', 'month_average_Con7',
+                'month_average_Sum7', 'tree_month_average_Con7',
+                'tree_month_average_Sum7']]
+    X_train['Time']=X_train['Time'].apply(lambda x: x.toordinal())
+    X_test['Time']=X_test['Time'].apply(lambda x: x.toordinal()) 
+    #Модель 1 Линейная регрессия
+    lr = LinearRegression()
+    lr.fit(X_train, y_train)
+    #На тестовых данных получаем
+    t = lr.predict(X_test.loc[119:119])[0][0]
+    return t
+try:
+    file = open('/content/drive/My Drive/coursera/6601_2.csv')
+except IOError as e:
+    print(u'не удалось открыть файл')
+else:
+    with file:        
+          #Датасет из 1С по одной позиции товара со свойствами : Общая сумма продаж за день,Остаток на складе, Количество проданного товара за день - целевая переменная
+          dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
+          t = prediction(dataset)
     
