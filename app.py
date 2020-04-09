@@ -32,6 +32,7 @@ app = Flask(__name__)
 def index():
     args = {"method": "GET"}
     if request.method == "POST":
+        t = 0
         file = request.files["file"]
         if bool(file.filename):
             file_bytes = file.read(MAX_FILE_SIZE)
