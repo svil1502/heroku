@@ -180,9 +180,10 @@ def main():
                args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
                args["method"] = "POST"
           try:
-                file = open('/content/drive/My Drive/coursera/6601_2.csv')
+                file = open('6601_2.csv')
                 except IOError as e:
-                print(u'не удалось открыть файл')
+                t = "не удалось открыть файл"
+                
           else:
                  with file:        
                  dataset = pd.read_csv('/content/drive/My Drive/coursera/6601_2.csv')
