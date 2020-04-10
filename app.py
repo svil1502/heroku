@@ -149,7 +149,7 @@ def index():
             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
             args["method"] = "POST"   
         try:
-                #file = open('6601_2.csv')
+                file = open('6601_2.csv')
                 t=0
         except IOError as e:
                 t = "не удалось открыть файл"
