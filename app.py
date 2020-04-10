@@ -156,7 +156,7 @@ def index():
                 
         else:
                 t = 1
-    args["t"]  = t
+        args["t"]  = t
         
     return render_template("main.html", args=args)
 
