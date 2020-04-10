@@ -149,7 +149,7 @@ def index():
             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
             args["method"] = "POST"   
         try:
-                file = open(file)
+                dataset = pd.read_csv(file.filename)
                 t=0
         except IOError as e:
                 t = "не удалось открыть файл"
