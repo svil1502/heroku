@@ -152,7 +152,7 @@ def index():
                 dataset = pd.read_csv(file.filename)
                 t=0
         except IOError as e:
-                t = "не удалось открыть файл"
+                t = file.filename
                 
         else:
                 t = 1
