@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+import cgi, csv
 
 import statsmodels.formula.api as smf
 import statsmodels.tsa.api as smt
@@ -17,6 +18,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["POST", "GET"])
 def index():
+    
     def custom_rating(genre):
         if (genre == 1 or genre == 2 or genre == 12) :
             return 1
@@ -88,7 +90,10 @@ def index():
         X_test = data.loc[test_index+1:].drop(["y", "Con", "Sum"], axis=1)
         y_test = data.loc[test_index+1:][["y"]]
         return (X_train, y_train, X_test, y_test, data)   
-    def func_feature_week(X_predict):
+    
+    def func_feature_week(X_predict, data):
+        feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
+    
         X_X_predict = pd.DataFrame()
         lag_start = 1
         lag_end = 8
@@ -109,7 +114,7 @@ def index():
         X_predict = X_test.loc[119:119]
         feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
         #Функция для подготовки данных для датасета, которых нужно спрогнозировать
-        X_X_predict = func_feature_week(X_predict)
+        X_X_predict = func_feature_week(X_predict, data)
         new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', 'mov_avg_Con',
                     'mov_avg_Sum', 'month_average_Con', 'month_average_Sum',
                     'tree_month_average_Con', 'tree_month_average_Sum', 'lag_con1',
@@ -138,28 +143,22 @@ def index():
         lr.fit(X_train, y_train)
         #На тестовых данных получаем
         t = lr.predict(X_test.loc[119:119])[0][0]
-        return t
+        return round(t,2)
 
     args = {"method": "GET"}
     if request.method == "POST":
         t = 0
         file = request.files["file"]
+        str_file_value = file.read().decode('utf-8')
+        file_t = str_file_value.splitlines()
+        csv_reader = csv.reader(file_t, delimiter=',')
+        file_data = [row for row in csv_reader][1:]
+        dataset = pd.DataFrame(file_data)
         if bool(file.filename):
             file_bytes = file.read(MAX_FILE_SIZE)
             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
-            args["method"] = "POST"   
-        try:
-                t1 = file.filename
-                t2 = "tmp/"
-                t3 = t1 + t2
-                dataset = pd.read_csv(t3)
-                t=0
-        except IOError as e:
-                t = file.filename
-                
-        else:
-                t = 1
-        args["t"]  = t
+            args["method"] = "POST"
+            args["t"] = prediction(dataset)
         
     return render_template("main.html", args=args)
 
