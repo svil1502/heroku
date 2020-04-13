@@ -10,10 +10,7 @@ import statsmodels.api as sm
 import scipy.stats as scs
 from scipy.optimize import minimize
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
-#import xgboost as xgb
-from sklearn.preprocessing import StandardScaler
-from sklearn import linear_model
+import xgboost as xgb
 MAX_FILE_SIZE = 1024 * 1024 + 1
 
 app = Flask(__name__)
@@ -21,6 +18,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["POST", "GET"])
 def index():
+    
     def custom_rating(genre):
         if (genre == 1 or genre == 2 or genre == 12) :
             return 1
@@ -30,8 +28,7 @@ def index():
             return 3
         elif (genre == 9 or genre == 10 or genre == 11):
             return 4
-         
-    
+
 
     def prepare_data(data):
         data.Sum= data.Sum.replace(r'\s+','',regex=True)
@@ -93,8 +90,10 @@ def index():
         X_test = data.loc[test_index+1:].drop(["y", "Con", "Sum"], axis=1)
         y_test = data.loc[test_index+1:][["y"]]
         return (X_train, y_train, X_test, y_test, data)   
-    def func_feature_week(X_predict,data):
+    
+    def func_feature_week(X_predict, data):
         feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
+    
         X_X_predict = pd.DataFrame()
         lag_start = 1
         lag_end = 8
@@ -107,67 +106,14 @@ def index():
             for i in range(lag_start, lag_end):
                     X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = X_predict["{feat}{i}".format(feat=feat, i=i)] 
         return X_X_predict
-     
-    def standart(X_train, new_df):
-          scaler = StandardScaler()
-          X_train_scaled = scaler.fit_transform(X_train)
-          X_predict_scaled = scaler.transform(new_df)
-          return (X_train_scaled, X_predict_scaled) 
-
-
-    def fit_predict_scaler(X_train_scaled, X_predict_scaled, y_train):
-          lr = LinearRegression()
-          lr.fit(X_train_scaled, y_train)
-          return lr.predict(X_predict_scaled) 
-    def prediction_scaler(dataset):
-          dataset.columns = ["Time","Con","y", "Sum"]
-          data = dataset.copy()
-          (X_train, y_train, X_test, y_test, data) = prepare_data(data)
-          #Проверим 119 строку y_test-должно быть 1235
-          X_predict = X_test.loc[119:119]
-          feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
-          #Функция для подготовки данных для датасета, которых нужно спрогнозировать
-          X_X_predict = func_feature_week(X_predict, data)
-          new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', 'mov_avg_Con',
-                    'mov_avg_Sum', 'month_average_Con', 'month_average_Sum',
-                    'tree_month_average_Con', 'tree_month_average_Sum', 'lag_con1',
-                    'lag_sum1', 'mov_avg_Con1', 'mov_avg_Sum1', 'month_average_Con1',
-                    'month_average_Sum1', 'tree_month_average_Con1',
-                    'tree_month_average_Sum1', 'lag_con2', 'lag_sum2', 'mov_avg_Con2',
-                    'mov_avg_Sum2', 'month_average_Con2', 'month_average_Sum2',
-                    'tree_month_average_Con2', 'tree_month_average_Sum2', 'lag_con3',
-                    'lag_sum3', 'mov_avg_Con3', 'mov_avg_Sum3', 'month_average_Con3',
-                    'month_average_Sum3', 'tree_month_average_Con3',
-                    'tree_month_average_Sum3', 'lag_con4', 'lag_sum4', 'mov_avg_Con4',
-                    'mov_avg_Sum4', 'month_average_Con4', 'month_average_Sum4',
-                    'tree_month_average_Con4', 'tree_month_average_Sum4', 'lag_con5',
-                    'lag_sum5', 'mov_avg_Con5', 'mov_avg_Sum5', 'month_average_Con5',
-                    'month_average_Sum5', 'tree_month_average_Con5',
-                    'tree_month_average_Sum5', 'lag_con6', 'lag_sum6', 'mov_avg_Con6',
-                    'mov_avg_Sum6', 'month_average_Con6', 'month_average_Sum6',
-                    'tree_month_average_Con6', 'tree_month_average_Sum6', 'lag_con7',
-                    'lag_sum7', 'mov_avg_Con7', 'mov_avg_Sum7', 'month_average_Con7',
-                    'month_average_Sum7', 'tree_month_average_Con7',
-                    'tree_month_average_Sum7']]
-          X_train['Time']=X_train['Time'].apply(lambda x: x.toordinal())
-          new_df['Time']=new_df['Time'].apply(lambda x: x.toordinal()) 
-          (X_train_scaled, X_predict_scaled) = standart(X_train, new_df)
-          t = fit_predict_scaler(X_train_scaled, X_predict_scaled, y_train)  
-          return round(t[0][0],2)    
-
-    args = {"method": "GET"}
-    if request.method == "POST":
-        t = 0
-        file = request.files["file"]
-        str_file_value = file.read().decode('utf-8')
-        file_t = str_file_value.splitlines()
-        csv_reader = csv.reader(file_t, delimiter=',')
-        file_data = [row for row in csv_reader][1:]
-        dataset = pd.DataFrame(file_data)
+    def prediction(dataset):
         dataset.columns = ["Time","Con","y", "Sum"]
         data = dataset.copy()
         (X_train, y_train, X_test, y_test, data) = prepare_data(data)
+        #Проверим 119 строку y_test-должно быть 1235
         X_predict = X_test.loc[119:119]
+        feature = ["lag_con","lag_sum","mov_avg_Con","mov_avg_Sum","month_average_Con","month_average_Sum", "tree_month_average_Con", "tree_month_average_Sum"]
+        #Функция для подготовки данных для датасета, которых нужно спрогнозировать
         X_X_predict = func_feature_week(X_predict, data)
         new_df = X_X_predict[['Time', 'month', 'week', 'season', 'lag_con', 'lag_sum', 'mov_avg_Con',
                     'mov_avg_Sum', 'month_average_Con', 'month_average_Sum',
@@ -191,20 +137,28 @@ def index():
                     'month_average_Sum7', 'tree_month_average_Con7',
                     'tree_month_average_Sum7']]
         X_train['Time']=X_train['Time'].apply(lambda x: x.toordinal())
-        new_df['Time']=new_df['Time'].apply(lambda x: x.toordinal()) 
-        X_predict['Time']=X_predict['Time'].apply(lambda x: x.toordinal())
-        (X_train_scaled, X_predict_scaled) = standart(X_train, X_predict)
+        X_test['Time']=X_test['Time'].apply(lambda x: x.toordinal()) 
+        #Модель 1 Линейная регрессия
         lr = LinearRegression()
-        lr.fit(X_train_scaled, y_train)
-        pr =  prediction_scaler(dataset)      
+        lr.fit(X_train, y_train)
+        #На тестовых данных получаем
+        t = lr.predict(X_test.loc[119:119])[0][0]
+        return round(t,2)
+
+    args = {"method": "GET"}
+    if request.method == "POST":
+        t = 0
+        file = request.files["file"]
+        str_file_value = file.read().decode('utf-8')
+        file_t = str_file_value.splitlines()
+        csv_reader = csv.reader(file_t, delimiter=',')
+        file_data = [row for row in csv_reader][1:]
+        dataset = pd.DataFrame(file_data)
         if bool(file.filename):
             file_bytes = file.read(MAX_FILE_SIZE)
             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
             args["method"] = "POST"
-            #dataset.columns = ["Time","Con","y", "Sum"]
-            #data = dataset.copy()
-            dataset .to_csv("output.csv")
-            args["t"] = pr
+            args["t"] = prediction(dataset)
         
     return render_template("main.html", args=args)
 
