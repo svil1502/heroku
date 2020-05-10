@@ -130,7 +130,7 @@ def index():
             for feat in feature:
                 X_X_predict["{feat}".format(feat=feat)]  =data["{feat}".format(feat=feat)].rolling(7,min_periods=1).mean()
                 for i in range(lag_start, lag_end):
-                    X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = data.loc[data.index[end - (i - 1)],'lag_con']
+                    X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = data.loc[data.index[end - (i - 1)],"{feat}".format(feat=feat)]
             return X_X_predict
      #Функция стандартизации данных
     def standart(X_train, X_test, new_df):
