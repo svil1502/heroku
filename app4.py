@@ -29,14 +29,11 @@ from flask import Flask, render_template, request
 
 #import matplotlib.pyplot as plt
 MAX_FILE_SIZE = 1024 * 1024 + 1
-ALLOWED_EXTENSIONS = set(['csv'])
+
 app = Flask(__name__)
 
 
 @app.route("/", methods=["POST", "GET"])
-
-#def page_not_found(e):
- #   return render_template('500.html'), 500
 def index():
 
      
@@ -133,7 +130,7 @@ def index():
             for feat in feature:
                 X_X_predict["{feat}".format(feat=feat)]  =data["{feat}".format(feat=feat)].rolling(7,min_periods=1).mean()
                 for i in range(lag_start, lag_end):
-                    X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = data.loc[data.index[end - (i - 1)],'lag_con']
+                    X_X_predict["{feat}{i}".format(feat=feat, i=i)]  = data.loc[data.index[end - (i - 1)],"{feat}".format(feat=feat)]
             return X_X_predict
      #Функция стандартизации данных
     def standart(X_train, X_test, new_df):
@@ -216,38 +213,36 @@ def index():
             prediction = lr.predict(X_predict_scaled)
             return prediction[0]
 
-    def allowed_file(filename):
-        return '.' in filename and \
-               filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
     args = {"method": "GET"}
     if request.method == "POST":
 
         file = request.files["file"]
-        if file and allowed_file(file.filename):
-             str_file_value = file.read().decode('utf-8')
-             file_t = str_file_value.splitlines()
-             csv_reader = csv.reader(file_t, delimiter=',')
-             file_data = [row for row in csv_reader][1:]
-             dataset = pd.DataFrame(file_data)
-        
-        try:
-            dataset.columns = ["Time","Con","y", "Sum"]
-            data = dataset.copy()
-            dataset = data_shot(dataset)
-            (X_X_predict, X_train_scaled, X_test_scaled,X_predict_scaled, y_train, y_test, X_train, X_test, data, X_predict, X_predict_data)=prediction_scaler(dataset)
-            model_all = {}
-            all_models_data(X_train_scaled, y_train, X_test_scaled, y_test)
-            lr, error = difference(model_all)
-            result = fit_predict(X_train_scaled, y_train, X_predict_scaled, lr)
-            if bool(file.filename):
+        str_file_value = file.read().decode('utf-8')
+        file_t = str_file_value.splitlines()
+        csv_reader = csv.reader(file_t, delimiter=',')
+        file_data = [row for row in csv_reader][1:]
+        dataset = pd.DataFrame(file_data)
+        dataset.columns = ["Time","Con","y", "Sum"]
+        data = dataset.copy()
+        dataset = data_shot(dataset)
+        (X_X_predict, X_train_scaled, X_test_scaled,X_predict_scaled, y_train, y_test, X_train, X_test, data, X_predict, X_predict_data)=prediction_scaler(dataset)
+        model_all = {}
+        all_models_data(X_train_scaled, y_train, X_test_scaled, y_test)
+        lr, error = difference(model_all)
+
+        result = fit_predict(X_train_scaled, y_train, X_predict_scaled, lr)
+        #(X_X_predict, X_train_scaled, X_test_scaled,X_predict_scaled, y_train, y_test, X_train, X_test, data, X_predict, X_predict_data)=prediction_scaler(data)
+        #model_all = {}
+        #all_models_data(X_train_scaled, y_train, X_test_scaled, y_test)
+        #lr, error = difference(model_all)
+        #pr = fit_predict(X_train_scaled, y_train, X_predict_scaled, lr)
+
+        if bool(file.filename):
                             file_bytes = file.read(MAX_FILE_SIZE)
                             args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
                             args["method"] = "POST"
                             dataset .to_csv("output.csv")
                             args["t"] = result
-        except:
-            args["t"] = "Ошибка загрузки файла"
 
 
 
